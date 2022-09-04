@@ -1,0 +1,41 @@
+﻿@page "/arrivals"
+<PageTitle>Arrivals</PageTitle>
+@using MainLine.Data
+@using MainLine.Data.Services
+@inject IArrivalService _arrivalService;
+
+<h1>Arrivals</h1>
+
+@if (arrivals?.Any() is true)
+{
+    foreach (var arrival in arrivals)
+    {
+        <div>
+            <h2>@arrival.ArrT</h2>
+            <p>@arrival.DestNm</p>
+        </div>
+    }
+    <p role="status">Current arrivals: @arrivals?.FirstOrDefault()?.ArrT</p>
+}
+
+@* <button class="btn btn-primary" @onclick="GetArrivals">Click me</button> *@
+
+<div class="input-group mb-3">
+  <input type="text" class="form-control" placeholder="Station/Map ID" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
+  <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
+</div>
+
+@code {
+    private IEnumerable<Eta> arrivals = new List<Eta>();
+    private string userInput = string.Empty;
+
+    private async Task GetArrivals()
+    {
+        var response = await _arrivalService.GetArrivalTimeByStationId(userInput);
+        if (response != null)
+        {
+            arrivals = response.Ctatt?.Eta ?? new List<Eta>();
+        }
+        StateHasChanged();
+    }
+}
