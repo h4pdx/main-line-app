@@ -13,15 +13,14 @@ public abstract class HttpClientBase
     {
         using (var request = new HttpRequestMessage(HttpMethod.Get, url))
         using (var response = await _httpClient.SendAsync(request))
-        {
-            return await ParseResponse<TResponse>(response);
-        }
+        return await ParseResponse<TResponse>(response);
     }
 
     private async Task<TResponse> ParseResponse<TResponse>(HttpResponseMessage response)
     {
         var content = await response.Content.ReadAsStringAsync();
         TResponse obj;
+        
         try
         {
             obj = JsonConvert.DeserializeObject<TResponse>(content);

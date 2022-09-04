@@ -1,27 +1,33 @@
 ﻿@page "/arrivals"
+
 <PageTitle>Arrivals</PageTitle>
+
 @using MainLine.Data
 @using MainLine.Data.Services
 @inject IArrivalService _arrivalService;
 
-<h1>Arrivals</h1>
+<h1>Arrivals 🚉</h1>
+<hr />
 
 @if (arrivals?.Any() is true)
 {
     foreach (var arrival in arrivals)
     {
         <div>
-            <h2>@arrival.ArrT</h2>
-            <p>@arrival.DestNm</p>
+            <h2>@(arrival.IsSch == 0 ? "⚡️" : "📆") @GetArrivalTime(arrival.ArrT) min</h2>
+            <h4>@arrival.DestNm</h4>
+            <small>@arrival.StpDe</small>
         </div>
+        <br />
     }
-    <p role="status">Current arrivals: @arrivals?.FirstOrDefault()?.ArrT</p>
+}
+else
+{
+    <p>No arrivals to show. Try entering a Station ID below.</p>
 }
 
-@* <button class="btn btn-primary" @onclick="GetArrivals">Click me</button> *@
-
 <div class="input-group mb-3">
-  <input type="text" class="form-control" placeholder="Station/Map ID" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
+  <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
   <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
 </div>
 
@@ -31,11 +37,19 @@
 
     private async Task GetArrivals()
     {
+        userInput ??= string.Empty;
+        arrivals = Enumerable.Empty<Eta>();
         var response = await _arrivalService.GetArrivalTimeByStationId(userInput);
         if (response != null)
         {
             arrivals = response.Ctatt?.Eta ?? new List<Eta>();
         }
         StateHasChanged();
+    }
+
+    private int GetArrivalTime(DateTime arrivalTime)
+    {
+        var timeSpan = arrivalTime - DateTime.Now;
+        return (int)timeSpan.TotalMinutes;
     }
 }

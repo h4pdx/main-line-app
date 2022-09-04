@@ -1,21 +1,22 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MainLine.Data;
 using MainLine.Data.Services;
 using MainLine.Data.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var ctaClientConfig = builder.Configuration.GetSection(nameof(CtaClientConfig)).Get<CtaClientConfig>();
+builder.Configuration.Bind(nameof(CtaClientConfig), ctaClientConfig);
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddTransient<ICtaArrivalsHttpClient, CtaArrivalsHttpClient>();
+builder.Services.AddTransient<ICtaHttpClient, CtaHttpClient>();
 builder.Services.AddTransient<IArrivalService, ArrivalService>();
+builder.Services.AddSingleton(ctaClientConfig);
 
-builder.Services.AddHttpClient<ICtaArrivalsHttpClient, CtaArrivalsHttpClient>(client =>
+builder.Services.AddHttpClient<ICtaHttpClient, CtaHttpClient>(client =>
 {
-    client.BaseAddress = new Uri("http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx");
+    client.BaseAddress = new Uri(ctaClientConfig.BaseUrl);
 });
 
 var app = builder.Build();

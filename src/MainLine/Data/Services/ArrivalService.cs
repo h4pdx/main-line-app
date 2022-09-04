@@ -4,11 +4,11 @@ namespace MainLine.Data.Services;
 
 public class ArrivalService : IArrivalService
 {
-    private readonly ICtaArrivalsHttpClient _ctaArrivalsHttpClient;
+    private readonly ICtaHttpClient _ctaHttpClient;
 
-    public ArrivalService(ICtaArrivalsHttpClient ctaArrivalsHttpClient)
-        => _ctaArrivalsHttpClient = ctaArrivalsHttpClient ?? throw new ArgumentNullException(nameof(ctaArrivalsHttpClient));
+    public ArrivalService(ICtaHttpClient ctaHttpClient)
+        => _ctaHttpClient = ctaHttpClient ?? throw new ArgumentNullException(nameof(ctaHttpClient));
     
     public async Task<CtaArrivalsResponse> GetArrivalTimeByStationId(string stationId)
-        => await _ctaArrivalsHttpClient.GetArrivalTimeByStationId(stationId);
+        => await _ctaHttpClient.GetArrivalTimeByStationId(stationId);
 }
