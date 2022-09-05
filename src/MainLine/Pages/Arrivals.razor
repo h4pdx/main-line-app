@@ -8,9 +8,14 @@
 
 <div class="container">
     
+    <h1>@(!string.IsNullOrWhiteSpace(stationName) && !string.IsNullOrWhiteSpace(userInput) ? $"Arrivals for {stationName}" : "Arrivals") 🚉</h1>
+    <br />
 
-    <h1>@(string.IsNullOrWhiteSpace(stationName) ? "Arrivals" : $"Arrivals for {stationName}") 🚉</h1>
-    <hr />
+    <div class="input-group mb-3">
+        <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
+        <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
+        <button class="btn btn-danger" type="button" @onclick="ClearResults">Clear Results</button>
+    </div>
 
     @if (arrivals?.Any() is true)
     {
@@ -21,13 +26,19 @@
     }
     else
     {
-        <p>No arrivals to show. Try entering a Station ID below.</p>
+        @if (isLoading == true)
+        {
+            <p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only"></span>
+                </div>
+            </p>
+        }
+        else
+        {
+            <p>No arrivals to show. Try entering a Station ID below.</p>
+        }
     }
-
-    <div class="input-group mb-3">
-        <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
-        <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
-    </div>
 
     @if (lastUpdated != DateTime.MinValue)
     {
@@ -38,14 +49,18 @@
 
 @code {
     private IEnumerable<Eta> arrivals = new List<Eta>();
+    @* private IEnumerable<Eta> arrivalsInbound = new List<Eta>(); *@
+    @* private IEnumerable<Eta> arrivalsOutbound = new List<Eta>(); *@
     private DateTime lastUpdated = DateTime.MinValue;
     private string userInput = string.Empty;
     private string stationName = string.Empty;
+    private bool isLoading = false;
 
     private async Task GetArrivals()
     {
         userInput ??= string.Empty;
         arrivals = Enumerable.Empty<Eta>();
+        isLoading = true;
         var response = await _arrivalService.GetArrivalTimeByStationId(userInput);
 
         if (response != null)
@@ -53,7 +68,18 @@
             arrivals = response.Ctatt?.Eta ?? new List<Eta>();
             lastUpdated = DateTime.Now;
             stationName = arrivals.FirstOrDefault()?.StaNm ?? string.Empty;
+            isLoading = false;
             StateHasChanged();
         }
+    }
+
+    private void ClearResults()
+    {
+        userInput = string.Empty;
+        arrivals = Enumerable.Empty<Eta>();
+        lastUpdated = DateTime.MinValue;
+        stationName = string.Empty;
+        isLoading = false;
+        StateHasChanged();
     }
 }

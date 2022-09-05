@@ -6,14 +6,37 @@
 @using MainLine.Data.Services
 @inject IArrivalService _arrivalService;
 
-<div class="d-flex flex-column">
-    <h2 class="mb-0 d-flex">
-        <span class="align-text-center">@Arrival.DestNm <small class="text text-faded">@arrivalTime</small></span>
-        <span class="material-symbols-outlined align-text-center m-1"><small>@arrivalIcon</small></span>
-    </h2>
-    <small>@Arrival.StpDe</small>
+<style scoped>
+    .arrival-details {
+        justify-content: left;
+        padding: 10px !important;
+        padding-left: 10px;
+    }
+    .arrival-icon {
+        width: 40px;
+        flex-shrink: 0;
+        text-align: center;
+    }
+    .arrival-time {
+        margin-left: auto !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col">
+        @if (Arrival.Rn != 0)
+        {
+            <small>@Arrival.Rt.GetTrainLineName() #@GetLineNumberFormatted(Arrival.Rn) to</small>
+        }
+        <div class="arrival-details d-flex flex-row flex-fill p-0 align-items-center text text-light" style="background-color: @Arrival.Rt.GetTrainLineColor()"> 
+            <span class="fs-2">@Arrival.DestNm</span>
+            <span class="fs-3 arrival-time">@arrivalTime</span>
+            <span class="arrival-icon material-symbols-outlined">@arrivalIcon</span>
+        </div>
+        <p class="mb-0">@Arrival.StpDe</p>
+        <hr />
+    </div>
 </div>
-<br />
 
 @code {
     [Parameter]
@@ -26,6 +49,15 @@
     {
         var timeSpan = arrivalTime - DateTime.Now;
         var minutesUntilArrival = (int)timeSpan.TotalMinutes;
-        return (minutesUntilArrival > 0 ? $"{minutesUntilArrival} min" : Arrival.IsApp == 1 ? "Due" : "<1 min");
+        var due = Arrival.IsApp == 1 ? "Due" : "<1 min";
+        return (minutesUntilArrival > 0 ? $"{minutesUntilArrival} min" : due);
     }
+
+    private string GetLineNumberFormatted(int lineNumber)
+        => lineNumber switch
+        {
+            (< 10) => $"00{lineNumber}",
+            (< 100) => $"0{lineNumber}",
+            _ => $"{lineNumber}"
+        };
 }
