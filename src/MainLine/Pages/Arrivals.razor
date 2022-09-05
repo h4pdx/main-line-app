@@ -6,50 +6,54 @@
 @using MainLine.Data.Services
 @inject IArrivalService _arrivalService;
 
-<h1>Arrivals 🚉</h1>
-<hr />
+<div class="container">
+    
 
-@if (arrivals?.Any() is true)
-{
-    foreach (var arrival in arrivals)
+    <h1>@(string.IsNullOrWhiteSpace(stationName) ? "Arrivals" : $"Arrivals for {stationName}") 🚉</h1>
+    <hr />
+
+    @if (arrivals?.Any() is true)
     {
-        <div>
-            <h2>@(arrival.IsSch == 0 ? "⚡️" : "📆") @GetArrivalTime(arrival.ArrT) min</h2>
-            <h4>@arrival.DestNm</h4>
-            <small>@arrival.StpDe</small>
-        </div>
-        <br />
+        foreach (var arrival in arrivals)
+        {
+            <ArrivalDetails Arrival="arrival" />
+        }
     }
-}
-else
-{
-    <p>No arrivals to show. Try entering a Station ID below.</p>
-}
+    else
+    {
+        <p>No arrivals to show. Try entering a Station ID below.</p>
+    }
 
-<div class="input-group mb-3">
-  <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
-  <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
+    <div class="input-group mb-3">
+        <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
+        <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
+    </div>
+
+    @if (lastUpdated != DateTime.MinValue)
+    {
+        <small class="text text-small">Last Updated: @lastUpdated.ToShortDateString() @lastUpdated.ToShortTimeString()</small>
+    }
+
 </div>
 
 @code {
     private IEnumerable<Eta> arrivals = new List<Eta>();
+    private DateTime lastUpdated = DateTime.MinValue;
     private string userInput = string.Empty;
+    private string stationName = string.Empty;
 
     private async Task GetArrivals()
     {
         userInput ??= string.Empty;
         arrivals = Enumerable.Empty<Eta>();
         var response = await _arrivalService.GetArrivalTimeByStationId(userInput);
+
         if (response != null)
         {
             arrivals = response.Ctatt?.Eta ?? new List<Eta>();
+            lastUpdated = DateTime.Now;
+            stationName = arrivals.FirstOrDefault()?.StaNm ?? string.Empty;
+            StateHasChanged();
         }
-        StateHasChanged();
-    }
-
-    private int GetArrivalTime(DateTime arrivalTime)
-    {
-        var timeSpan = arrivalTime - DateTime.Now;
-        return (int)timeSpan.TotalMinutes;
     }
 }

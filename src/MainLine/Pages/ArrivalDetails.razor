@@ -1,0 +1,31 @@
+﻿@page "/arrival-details"
+
+<PageTitle>ArrivalDetails</PageTitle>
+
+@using MainLine.Data
+@using MainLine.Data.Services
+@inject IArrivalService _arrivalService;
+
+<div class="d-flex flex-column">
+    <h2 class="mb-0 d-flex">
+        <span class="align-text-center">@Arrival.DestNm <small class="text text-faded">@arrivalTime</small></span>
+        <span class="material-symbols-outlined align-text-center m-1"><small>@arrivalIcon</small></span>
+    </h2>
+    <small>@Arrival.StpDe</small>
+</div>
+<br />
+
+@code {
+    [Parameter]
+    public Eta Arrival { get; set; }
+
+    public string arrivalTime => GetArrivalTime(Arrival.ArrT);
+    public string arrivalIcon => Arrival.IsSch == 0 ? "rss_feed" : "schedule";
+
+    private string GetArrivalTime(DateTime arrivalTime)
+    {
+        var timeSpan = arrivalTime - DateTime.Now;
+        var minutesUntilArrival = (int)timeSpan.TotalMinutes;
+        return (minutesUntilArrival > 0 ? $"{minutesUntilArrival} min" : Arrival.IsApp == 1 ? "Due" : "<1 min");
+    }
+}
