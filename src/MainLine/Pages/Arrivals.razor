@@ -8,13 +8,16 @@
 
 <div class="container">
     
-    <h1>@(!string.IsNullOrWhiteSpace(stationName) && !string.IsNullOrWhiteSpace(userInput) ? $"Arrivals for {stationName}" : "Arrivals") 🚉</h1>
+    <h1>@(!string.IsNullOrWhiteSpace(stationName) && !string.IsNullOrWhiteSpace(userInput) ? $"Arrivals for {stationName} - {userInput}" : "Arrivals") 🚉</h1>
     <br />
 
     <div class="input-group mb-3">
         <button class="btn btn-primary" type="button" id="arrivals-btn" @onclick="GetArrivals">Find Arrivals</button>
+        @if (arrivals?.Any() is true)
+        {
+            <button class="btn btn-outline-primary" type="button" id="clear-btn" @onclick="ClearResults">Clear Results</button>
+        }
         <input type="text" class="form-control" placeholder="Station/Map ID (ie. 41360)" aria-label="Station/Map ID" aria-describedby="arrivals-btn" @bind="userInput" />
-        <button class="btn btn-danger" type="button" @onclick="ClearResults">Clear Results</button>
     </div>
 
     @if (arrivals?.Any() is true)
@@ -49,8 +52,6 @@
 
 @code {
     private IEnumerable<Eta> arrivals = new List<Eta>();
-    @* private IEnumerable<Eta> arrivalsInbound = new List<Eta>(); *@
-    @* private IEnumerable<Eta> arrivalsOutbound = new List<Eta>(); *@
     private DateTime lastUpdated = DateTime.MinValue;
     private string userInput = string.Empty;
     private string stationName = string.Empty;
@@ -62,10 +63,12 @@
         arrivals = Enumerable.Empty<Eta>();
         isLoading = true;
         var response = await _arrivalService.GetArrivalTimeByStationId(userInput);
+        var response2 = await _arrivalService.GetMappedArrivalTimeByStationId(userInput);
 
         if (response != null)
         {
             arrivals = response.Ctatt?.Eta ?? new List<Eta>();
+            arrivals = arrivals.OrderBy(a => a.StpId);
             lastUpdated = DateTime.Now;
             stationName = arrivals.FirstOrDefault()?.StaNm ?? string.Empty;
             isLoading = false;

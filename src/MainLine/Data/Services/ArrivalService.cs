@@ -11,4 +11,32 @@ public class ArrivalService : IArrivalService
     
     public async Task<CtaArrivalsResponse> GetArrivalTimeByStationId(string stationId)
         => await _ctaHttpClient.GetArrivalTimeByStationId(stationId);
+    
+    public async Task<IEnumerable<Station>> GetMappedArrivalTimeByStationId(string stationId)
+        => MapResponse(await _ctaHttpClient.GetArrivalTimeByStationId(stationId));
+
+    private IEnumerable<Station> MapResponse(CtaArrivalsResponse response)
+    {
+        var stations = Enumerable.Empty<Station>();
+        if (response?.Ctatt?.Eta?.Any() is true)
+        {
+            stations = response.Ctatt.Eta
+                .GroupBy(x => x.StaId)
+                .Select(x => new Station
+                {
+                    Id = x.Key,
+                    Name = x.FirstOrDefault()?.StaNm ?? string.Empty,
+                    Stops = x.GroupBy(y => y.StpId)
+                        .Select(y => new Stop
+                        {
+                            Id = y.Key,
+                            Description = y.FirstOrDefault()?.StpDe ?? string.Empty,
+                            Arrivals = y.Select(z => new Arrival(z))
+                        })
+                })
+                .ToList();
+        }
+
+        return stations;
+    }
 }
