@@ -1,0 +1,29 @@
+﻿@page "/stop-detail"
+
+<PageTitle>StopDetail</PageTitle>
+
+@using MainLine.Data;
+
+<style scoped>
+    .stop-row {
+        padding: 10px 10px 5px 10px;
+        border-bottom: 2px solid #ccc;
+    }
+    .stop-details {
+        justify-content: left;
+        display: flex;
+    }
+</style>
+
+<div class="row">
+    <p class="mb-0 px-0">@stop.Id - @stop.Description</p>
+    @foreach (var arrival in stop.Arrivals)
+    {
+        <ArrivalDetail arrival="arrival" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Stop stop { get; set; }
+}

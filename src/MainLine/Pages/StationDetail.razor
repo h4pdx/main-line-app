@@ -1,0 +1,30 @@
+﻿@page "/station-detail"
+
+<PageTitle>StationDetail</PageTitle>
+
+@using MainLine.Data;
+
+<style scoped>
+    .station-row {
+        padding: 10px 10px 5px 10px;
+        border-bottom: 2px solid #ccc;
+    }
+    .station-details {
+        justify-content: left;
+        display: flex;
+    }
+</style>
+
+<div class="row">
+    <h1>@($"Arrivals for {station.Name} - {station.Id}") 🚉</h1>
+
+    @foreach (var stop in station.Stops)
+    {
+        <StopDetail stop="stop" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Station station { get; set; }
+}
