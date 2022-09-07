@@ -4,27 +4,17 @@
 
 @using MainLine.Data;
 
-<style scoped>
-    .station-row {
-        padding: 10px 10px 5px 10px;
-        border-bottom: 2px solid #ccc;
-    }
-    .station-details {
-        justify-content: left;
-        display: flex;
-    }
-</style>
-
 <div class="row">
-    <h1>@($"Arrivals for {station.Name} - {station.Id}") 🚉</h1>
-
-    @foreach (var stop in station.Stops)
-    {
-        <StopDetail stop="stop" />
-    }
+        <h1 class="px-1">@($"Arrivals for {Station.Name}") <small class="text text-faded">@($"({@Station.Id})")</small></h1>
+        @foreach (var stop in Station.Stops)
+        {
+            <div class="col d-flex flex-column px-0">
+                <StopDetail Stop="stop" />
+            </div>
+        }
 </div>
 
 @code {
     [Parameter]
-    public Station station { get; set; }
+    public Station Station { get; set; } = new();
 }

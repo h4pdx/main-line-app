@@ -22,18 +22,15 @@
 
     @if (stations?.Any() is true)
     {
-        @* foreach (var arrival in arrivals)
-        {
-            <ArrivalDetails Arrival="arrival" />
-        } *@
         foreach (var station in stations)
         {
-            <StationDetail station="station" />            
+            <hr />
+            <StationDetail Station="station" />            
         }
     }
     else
     {
-        @if (isLoading == true)
+        @if (isLoading)
         {
             <p>
                 <div class="spinner-border text-primary" role="status">
@@ -55,31 +52,19 @@
 </div>
 
 @code {
-    @* private IEnumerable<Eta> arrivals = new List<Eta>(); *@
     private IEnumerable<Station> stations;
     private DateTime lastUpdated = DateTime.MinValue;
     private string userInput = string.Empty;
-    @* private string stationName = string.Empty; *@
-    private bool isLoading = false;
+    private bool isLoading;
 
     private async Task GetArrivals()
     {
-        userInput ??= string.Empty;
-        @* arrivals = Enumerable.Empty<Eta>(); *@
         isLoading = true;
-        @* var response = await _arrivalService.GetArrivalTimeByStationId(userInput); *@
-        var response = await _arrivalService.GetMappedArrivalTimeByStationId(userInput);
-
-        if (response != null)
-        {
-            @* arrivals = response.Ctatt?.Eta ?? new List<Eta>(); *@
-            @* arrivals = arrivals.OrderBy(a => a.StpId); *@
-            stations = response;
-            lastUpdated = DateTime.Now;
-            @* stationName = arrivals.FirstOrDefault()?.StaNm ?? string.Empty; *@
-            isLoading = false;
-            StateHasChanged();
-        }
+        stations = Enumerable.Empty<Station>();
+        stations = await _arrivalService.GetMappedArrivalTimeByStationId(userInput);
+        lastUpdated = DateTime.Now;
+        isLoading = false;
+        StateHasChanged();
     }
 
     private void ClearResults()

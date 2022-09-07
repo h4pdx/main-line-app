@@ -3,13 +3,16 @@
 <PageTitle>ArrivalDetail</PageTitle>
 
 @using MainLine.Data
-@using MainLine.Data.Services
-@inject IArrivalService _arrivalService;
 
 <style scoped>
     .arrival-row {
         padding: 10px 10px 5px 10px;
-        border-bottom: 2px solid #ccc;
+        margin: 5px 10px 5px 0px;
+        border: 2px solid #000000;
+        min-height: 80px;
+        min-width: 420px;
+        max-height: 80px;
+        @* max-width: 420px; *@
     }
     .arrival-details {
         justify-content: left;
@@ -26,21 +29,19 @@
     }
 </style>
 
-<div class="row text @textColor arrival-row" style="background-color: @arrival.RouteColor">
-
-    <small class="px-0">@arrival.Route #@arrival.RunId to</small>
+<div class="row text @textColor arrival-row " style="background-color: @Arrival.RouteColor">
+    <small class="px-0">@Arrival.Route #@Arrival.RunId to</small>
     <div class="arrival-details flex-row flex-fill p-0 align-items-center"> 
-        <span class="fs-2">@arrival.DestinationName</span>
-        <span class="fs-3 arrival-time">@arrival.ArrivalTimeInMinutes</span>
+        <span class="fs-2">@Arrival.DestinationName</span>
+        <span class="fs-3 arrival-time">@Arrival.ArrivalTimeInMinutes</span>
         <span class="arrival-icon material-symbols-outlined">@arrivalIcon</span>
     </div>
-    @* <p class="mb-0 px-0">@arrival.StationName @arrival.StopId - @arrival.StopDescription</p> *@
 </div>
 
 @code {
     [Parameter]
-    public MainLine.Data.Arrival arrival { get; set; }
+    public Arrival Arrival { get; set; } = new(new Eta());
 
-    public string arrivalIcon => arrival.IsScheduled ? "schedule" : "rss_feed"; // Show a clock if it's scheduled, otherwise show a feed icon
-    public string textColor => arrival.RouteColor == "#F9E300" ? "text-dark" : "text-light"; // Black text for yellow line
+    private string arrivalIcon => Arrival.IsScheduled ? "schedule" : "rss_feed"; // Show a clock if it's scheduled, otherwise show a feed icon
+    private string textColor => Arrival.RouteColor == "#F9E300" ? "text-dark" : "text-light"; // Black text for yellow line
 }

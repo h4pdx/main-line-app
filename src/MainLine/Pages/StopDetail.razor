@@ -7,23 +7,18 @@
 <style scoped>
     .stop-row {
         padding: 10px 10px 5px 10px;
-        border-bottom: 2px solid #ccc;
-    }
-    .stop-details {
-        justify-content: left;
-        display: flex;
     }
 </style>
 
-<div class="row">
-    <p class="mb-0 px-0">@stop.Id - @stop.Description</p>
-    @foreach (var arrival in stop.Arrivals)
+<div class="row mx-1">
+    <p class="mb-0 px-0">@Stop.Description <small class="text text-faded">(@Stop.Id)</small></p>
+    @foreach (var arrival in Stop.Arrivals)
     {
-        <ArrivalDetail arrival="arrival" />
+        <ArrivalDetail Arrival="arrival" />
     }
 </div>
 
 @code {
     [Parameter]
-    public Stop stop { get; set; }
+    public Stop Stop { get; set; } = new();
 }
