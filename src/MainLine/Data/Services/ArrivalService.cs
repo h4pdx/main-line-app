@@ -16,27 +16,21 @@ public class ArrivalService : IArrivalService
         => MapResponse(await _ctaHttpClient.GetArrivalTimeByStationId(stationId));
 
     private IEnumerable<Station> MapResponse(CtaArrivalsResponse response)
-    {
-        var stations = Enumerable.Empty<Station>();
-        if (response?.Ctatt?.Eta?.Any() is true)
-        {
-            stations = response.Ctatt.Eta
-                .GroupBy(x => x.StaId)
-                .Select(x => new Station
+        => (response?.Ctatt?.Eta?.Any() is true)
+        ? response.Ctatt.Eta
+            .GroupBy(x => x.StaId)
+            .Select(x => new Station
+            {
+                Id      = x.Key,
+                Name    = x.FirstOrDefault()?.StaNm ?? string.Empty,
+                Stops   = x.GroupBy(y => y.StpId)
+                .Select(y => new Stop
                 {
-                    Id = x.Key,
-                    Name = x.FirstOrDefault()?.StaNm ?? string.Empty,
-                    Stops = x.GroupBy(y => y.StpId)
-                        .Select(y => new Stop
-                        {
-                            Id = y.Key,
-                            Description = y.FirstOrDefault()?.StpDe ?? string.Empty,
-                            Arrivals = y.Select(z => new Arrival(z))
-                        })
+                    Id          = y.Key,
+                    Description = y.FirstOrDefault()?.StpDe ?? string.Empty,
+                    Arrivals    = y.Select(z => new Arrival(z))
                 })
-                .ToList();
-        }
-
-        return stations;
-    }
+            })
+            .ToList()
+        : Enumerable.Empty<Station>();
 }
