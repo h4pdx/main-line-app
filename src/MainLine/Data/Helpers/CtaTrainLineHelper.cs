@@ -36,9 +36,9 @@ public static class CtaTrainLineHelper
     public static string GetLineNumberFormatted(this int lineNumber)
         => lineNumber switch
         {
-            (< 10)  => $"00{lineNumber}",
-            (< 100) => $"0{lineNumber}",
-            _       => $"{lineNumber}"
+            < 10  => $"00{lineNumber}",
+            < 100 => $"0{lineNumber}",
+            _     => $"{lineNumber}"
         };
 
     public static string GetArrivalTime(this DateTime arrival, bool isDue)

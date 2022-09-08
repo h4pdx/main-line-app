@@ -6,13 +6,13 @@ public abstract class HttpClientBase
 {
     private readonly HttpClient _httpClient;
 
-    public HttpClientBase(HttpClient httpClient)
+    protected HttpClientBase(HttpClient httpClient)
         => _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
-    public async Task<TResponse> GetRequest<TResponse>(string url)
+    protected async Task<TResponse> GetRequest<TResponse>(string url)
     {
-        using (var request = new HttpRequestMessage(HttpMethod.Get, url))
-        using (var response = await _httpClient.SendAsync(request))
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        using var response = await _httpClient.SendAsync(request);
         return await ParseResponse<TResponse>(response);
     }
 
@@ -23,7 +23,7 @@ public abstract class HttpClientBase
         
         try
         {
-            obj = JsonConvert.DeserializeObject<TResponse>(content);
+            obj = JsonConvert.DeserializeObject<TResponse>(content) ?? throw new InvalidOperationException($"JSON deserialization of HttpResponse failed");
         }
         catch (Exception ex)
         {

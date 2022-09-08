@@ -4,13 +4,9 @@ public class Arrival
     private readonly Eta _arrival;
     public Arrival(Eta eta) => _arrival = eta;
 
-    public string StationId             => _arrival.StaId;
     public DateTime ArrivalTime         => _arrival.ArrT;
-    public string ArrivalTimeInMinutes  => _arrival.ArrT.GetArrivalTime(_arrival.IsSch == 0);
+    public string ArrivalTimeInMinutes  => _arrival.ArrT.GetArrivalTime(_arrival.IsSch == 0 && _arrival.IsApp == 1);
     public string DestinationName       => _arrival.DestNm;
-    public string StationName           => _arrival.StaNm;
-    public string StopId                => _arrival.StpId;
-    public string StopDescription       => _arrival.StpDe;
     public string RunId                 => _arrival.Rn.GetLineNumberFormatted();
     public string Route                 => _arrival.Rt.GetTrainLineName();
     public string RouteColor            => _arrival.Rt.GetTrainLineColor();

@@ -8,7 +8,7 @@
 
 <div class="container">
     
-    <h1>Arrivals 🚉</h1>
+    <h1>CTA L Train & Subway Arrivals 🚉</h1>
     <br />
 
     <div class="input-group mb-3">
@@ -52,7 +52,7 @@
 </div>
 
 @code {
-    private IEnumerable<Station> stations;
+    private IEnumerable<Station> stations = Enumerable.Empty<Station>();
     private DateTime lastUpdated = DateTime.MinValue;
     private string userInput = string.Empty;
     private bool isLoading;

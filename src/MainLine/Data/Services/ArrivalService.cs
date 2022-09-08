@@ -15,7 +15,7 @@ public class ArrivalService : IArrivalService
     public async Task<IEnumerable<Station>> GetMappedArrivalTimeByStationId(string stationId)
         => MapResponse(await _ctaHttpClient.GetArrivalTimeByStationId(stationId));
 
-    private IEnumerable<Station> MapResponse(CtaArrivalsResponse response)
+    private static IEnumerable<Station> MapResponse(CtaArrivalsResponse response)
         => (response?.Ctatt?.Eta?.Any() is true)
         ? response.Ctatt.Eta
             .GroupBy(x => x.StaId)
