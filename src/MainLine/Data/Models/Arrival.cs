@@ -1,4 +1,5 @@
-namespace MainLine.Data;
+namespace MainLine.Data.Models;
+
 public class Arrival
 {
     private readonly Eta _arrival;
@@ -17,14 +18,14 @@ public class Arrival
 
 public class Stop
 {
-    public string Id { get; set; }
-    public string Description { get; set; }
-    public IEnumerable<Arrival> Arrivals { get; set; }
+    public string Id { get; init; }
+    public string Description { get; init; }
+    public IEnumerable<Arrival> Arrivals { get; init; }
 }
 
 public class Station
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public IEnumerable<Stop> Stops { get; set; }
+    public string Id { get; init; }
+    public string Name { get; init; }
+    public IEnumerable<Stop> Stops { get; init; }
 }

@@ -3,6 +3,7 @@
 <PageTitle>Arrivals</PageTitle>
 
 @using MainLine.Data
+@using MainLine.Data.Models
 @using MainLine.Data.Services
 @inject IArrivalService _arrivalService;
 
@@ -59,20 +60,19 @@
 
     private async Task GetArrivals()
     {
-        isLoading = true;
-        stations = Enumerable.Empty<Station>();
-        stations = await _arrivalService.GetMappedArrivalTimeByStationId(userInput);
+        isLoading   = true;
+        stations    = await _arrivalService.GetMappedArrivalTimeByStationId(userInput);
         lastUpdated = DateTime.Now;
-        isLoading = false;
+        isLoading   = false;
         StateHasChanged();
     }
 
     private void ClearResults()
     {
-        userInput = string.Empty;
-        stations = Enumerable.Empty<Station>();
+        userInput   = string.Empty;
+        stations    = Enumerable.Empty<Station>();
         lastUpdated = DateTime.MinValue;
-        isLoading = false;
+        isLoading   = false;
         StateHasChanged();
     }
 }

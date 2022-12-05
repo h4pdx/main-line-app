@@ -1,3 +1,5 @@
+using MainLine.Data.Models;
+
 namespace MainLine.Data.Services;
 
 public interface IArrivalService

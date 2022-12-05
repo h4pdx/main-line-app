@@ -1,4 +1,5 @@
 using MainLine.Data.Clients;
+using MainLine.Data.Models;
 
 namespace MainLine.Data.Services;
 
@@ -19,11 +20,13 @@ public class ArrivalService : IArrivalService
         => (response?.Ctatt?.Eta?.Any() is true)
         ? response.Ctatt.Eta
             .GroupBy(x => x.StaId)
+            .OrderBy(x => x.Key)
             .Select(x => new Station
             {
                 Id      = x.Key,
                 Name    = x.FirstOrDefault()?.StaNm ?? string.Empty,
                 Stops   = x.GroupBy(y => y.StpId)
+                .OrderBy(y => y.Key)
                 .Select(y => new Stop
                 {
                     Id          = y.Key,
